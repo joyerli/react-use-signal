@@ -1,0 +1,9 @@
+{
+  "name": "@joyer/react-use-signal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.3.2"
+  }
+}
