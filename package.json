@@ -1,18 +1,58 @@
 {
   "name": "@joyer/react-use-signal",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "一个超简单的跨组件通信的信号状态",
+  "files": [
+    "dist",
+    "README.md",
+    "index.js",
+    "package.json"
+  ],
+  "keywords": [
+    "hooks",
+    "react hooks",
+    "signal",
+    "use signal",
+    "react use signal",
+    "react-use-signal"
+  ],
+  "author": "joyerli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joyerli/react-use-signal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joyerli/react-use-signal.git/issues"
+  },
+  "main": "./dist/react-use-signal.umd.js",
+  "module": "./dist/unstated-next.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/unstated-next.es.js",
+      "require": "./dist/unstated-next.umd.js"
+    }
+  },
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "test": "jest",
+    "build": "vite build"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.3.1",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
     "@types/lodash.isfunction": "^3.0.9",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^24.1.0",
     "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "ts-jest": "^29.2.0",
+    "typescript": "^5.5.3",
     "vite": "^5.3.2"
   },
   "dependencies": {
