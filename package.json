@@ -1,7 +1,7 @@
 {
   "name": "@joyer/react-use-shared-state",
   "version": "1.0.0",
-  "description": "一个超简单的跨组件通信的信号状态",
+  "description": "一个超简单的跨组件通信的共享状态库",
   "files": [
     "dist",
     "README.md",
