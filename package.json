@@ -1,5 +1,5 @@
 {
-  "name": "@joyer/react-use-signal",
+  "name": "@joyer/react-use-shared-state",
   "version": "1.0.0",
   "description": "一个超简单的跨组件通信的信号状态",
   "files": [
@@ -26,11 +26,16 @@
   },
   "main": "./dist/react-use-signal.umd.js",
   "module": "./dist/unstated-next.es.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/unstated-next.es.js",
       "require": "./dist/unstated-next.umd.js"
     }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "license": "MIT",
   "scripts": {
