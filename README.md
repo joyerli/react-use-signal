@@ -20,19 +20,19 @@ import useSharedState from '@joyer/react-use-shared-state';
 
 const Context = React.createContext({});
 const ChildA: React.FC = () => {
-  const { numberSharedState } = React.useContext(Context);
-  const number = numberSharedState.useValue();
+  const { numberChannel } = React.useContext(Context);
+  const number = numberChannel.useValue();
   return (<div>{number}</div>);
 };
 const ChildB: React.FC<{}> = () => {
-  const { numberSharedState } = React.useContext(Context);
+  const { numberChannel } = React.useContext(Context);
   return (<button onClick={() => {
-    numberSharedState.setValue(10);
+    numberChannel.setValue(10);
   }}>按钮</button>);
 };
 const Root: React.FC<{}> = () => {
-  const numberSharedState = useSharedState(1);
-  return (<Context.Provider value={{ numberSharedState }}>
+  const numberChannel = useSharedState(1);
+  return (<Context.Provider value={{ numberChannel }}>
     <ChildA />
     <ChildB />
   </Context.Provider>);
@@ -50,8 +50,8 @@ const Root: React.FC<{}> = () => {
 如果需要实时获取一个共享状态的最新值(事件中的命令式使用，本质为`ref`)，可以直接调用共享状态通道的`getValue`函数获取：
 
 ```tsx
-const sharedState = useSharedState(1);
-const value = sharedState.getValue();
+const channel = useSharedState(1);
+const value = channel.getValue();
 ```
 
 这样返回的`value`将不会是一个响应式数据(为一个`ref`值)，在状态被其他组件更新后，也不会导致当前组件的re-render。建议在当前组件中只有事件逻辑中需要一个共享组件的的值时使用，可以避免当前组件因为该状态变化触发re-render。
@@ -59,9 +59,9 @@ const value = sharedState.getValue();
 ### 订阅
 可以对一个共享状态变化进行订阅：
 ```tsx
-const sharedState = useSharedState(1);
+const channel = useSharedState(1);
 React.useEffect(() => {
-  sharedState.subscribe((value) => {
+  channel.subscribe((value) => {
     // 做一些额外的事情，比如有选择的更新当前某个当前组件状态的变化或者执行一些方法
   });
 }, []);
@@ -80,8 +80,8 @@ import useSharedState from '@joyer/react-use-shared-state';
 const Context = React.createContext({})
 
 function useIsAdult() {
-  const { ageSharedState } = React.useContext(Context);
-  const age = ageSharedState.useValue();
+  const { ageChannel } = React.useContext(Context);
+  const age = ageChannel.useValue();
   const isAdult = React.useMemo(() => {
     return age >= 18;
   }, [age]);
@@ -94,14 +94,14 @@ const ChildA: React.FC = () => {
   </div>);
 };
 const ChildB: React.FC<{}> = () => {
-  const { ageSharedState } = React.useContext(Context);
+  const { ageChannel } = React.useContext(Context);
   return (<button onClick={() => {
-    ageSharedState.setValue(10);
+    ageChannel.setValue(10);
   }}>按钮</button>);
 };
 const Root: React.FC<{}> = () => {
-  const ageSharedState = useSharedState(1);
-  return (<Context.Provider value={{ ageSharedState }}>
+  const ageChannel = useSharedState(1);
+  return (<Context.Provider value={{ ageChannel }}>
     <ChildA />
     <ChildB />
   </Context.Provider>);
@@ -110,17 +110,17 @@ const Root: React.FC<{}> = () => {
 
 ## 优势
 
-1. 非常轻量，可以从下文中的背景和设计理念来看，react-use-shared-state想要解决的问题非常简单，它本质上就是一个事件流工具；
+1. 非常轻量，可以从下文中的背景和设计理念来看，react-use-shared-state想要解决的问题非常简单，本质上就是一个事件流工具；
 
 2. 由于轻量，所以灵活。
 
-3. 不依赖react.memo，也就是连equals计算消耗都没有；
+3. 不依赖react.memo，连equals计算消耗都没有；
 
-4. 等同于hook同样的状态细颗粒度，本质上就是每个组件的已由状态。当你不需要redux，mobx这种都是基于对象的状态流，不喜欢抽象什么领域，模型的情况下，使用react-use-shared-state体验非常友好，使用体验也是无限接近于原生的hook；
+4. 保持跟useState同样的颗粒度。当你不需要redux，mobx这种基于对象的状态流，不喜欢抽象什么领域，模型的情况下，使用react-use-shared-state体验非常友好，使用体验也非常接近于原生的hook；
 
-5. 性能卓越，非常容易做到「真正的需要渲染的地方才渲染」的效果；
+5. 性能卓越，非常容易做到「真正需要渲染的地方才渲染」的效果；
 
-6. 非常容易集成到已有系统。就算接手的系统已经是一座「屎山」，使用react-use-shared-state进行改造也非常简单(只需要对跨组件的状态进行一一改造就行)，且可以渐进式慢慢改造。对于不考虑后续维护性和可读性的话，还可以简单的将一个页面的跨组件状态都放在同一个地方，这样的行为并不会影响性能。
+6. 非常容易集成到已有系统。就算接手的系统已经是一座「屎山」，使用react-use-shared-state进行改造也非常简单(只需要对跨组件的状态进行一一改造就行)，还可以渐进式慢慢调整。对于不考虑后续可维护性和可读性的话，可以简单的将一个页面的跨组件状态都放在同一个地方，且这种行为不会影响性能。
 
 ## 背景
 
@@ -128,7 +128,7 @@ const Root: React.FC<{}> = () => {
 
 首先探讨如果不采用redux,mobx，使用原生的react的跨组件共享状态方案`Context`，会具备那些问题？
 
-react原生的跨组件通信为`Context`，在使用`Context`进行组件之间通信时，需要进行状态提升，就是将状态放在通信的组件公共的祖先节点之中。这会导致数据的变化时祖先组件节点`re-render`, 从而整个组件树都会re-render，带来非常大的性能损失。react官方推荐我们使用`React.memo`包裹函数，降低非必要组件渲染。如：
+react原生的跨组件通信为`Context`。在使用`Context`进行组件之间通信时，需要进行状态提升，提升到需要通信的组件的公共的祖先节点之中。这会导致当数据的变化时祖先节点产生`re-render`, 从而祖先节点中的整个组件树都会re-render，带来非常大的性能损失。react官方推荐使用`React.memo`包裹函数，降低非必要组件渲染。如：
 
 ```tsx
 const Context = React.createContext<any>({})
@@ -167,9 +167,9 @@ const Root: React.FC<{}> = React.memo(() => {
 });
 ```
 
-在本案例中，点击按钮后，还是会导致组件`SubCompA`, `SubCompC`, `Root`组件re-render，但`SubCompC`, `Root`都是不期望re-render的额外渲染。且在实际使用情况下，性能会损失更大，因为：
-* 不会把每一个单独的状态放到一个独立的Context。也就是Context中通常会包含多个状态。当其中任何一个状态发生变化时，所有使用了该Context的组件都会更新，不管你有没有依赖具体发生变化的那个状态。这也会导致，re-render的非法扩散(不受期望re-render)。
-* 非常依靠`React.memo`发挥效果，但在实际开发过程，使`React.memo`保持完美的运行是一件非常困难的事情。如不允许使用对象和函数的字面量，一些特殊情况下还需要去维护`memo`的第二个复杂的`equals`函数。
+在本案例中，点击按钮后，会导致组件`SubCompA`, `SubCompC`, `Root`组件re-render，但`SubCompC`, `Root`都是不受期望的re-render。且在实际使用情况下，性能会损失更大，因为：
+* 不会把每一个状态单独放到一个的Context中。当Context中包含多个状态时，任何一个状态发生变化后，不管有没有依赖具体发生变化的那个状态，所有使用了该Context的组件都会更新，导致re-render的非法扩散(不受期望的re-render)。
+* 非常依靠`React.memo`发挥效果，但在实际开发过程，使`React.memo`保持完美运行是一件非常困难的事情。如不应该传递给组件的属性值使用对象和函数的字面量。
 
 
 如下面的对于组件的使用：
@@ -200,13 +200,13 @@ const Root: React.FC<{}> = React.memo(() => {
 });
 ```
 
-> 这里并不是想说`memo`函数没有必要。`memo`是提升性能的一个很重要的手段，在平常开发过程中，非常需要严格开发，努力使`memo`发挥作用。这里的说明只是想说，在实际情况下，理想跟现实还是有差距的。
+> 这里并不是想说`memo`没有必要。`memo`是提升性能的一个很重要的手段，在平常开发过程中，非常需要严格遵循，努力使`memo`发挥作用。
 
-`Context`中造成性能损失，主要的原因是状态提升，导致更大范围的组件re-render导致。
+综上所述，`Context`中的性能损失，主要的原因是状态提升导致更大范围的组件re-render造成。
 
 ## 设计理念
 
-为了解决原生`Context`的问题，如果不对状态进行提升，有什么办法通知另一个(or多个)组件的状态需要更新了呢？ 其中一种就是使用事件。
+为了解决原生Context的问题，不能进行状态进行提升，而是在不同的组件中存在多个相同含义的状态，然后通过统一的机制管理这些状态的值，使它实际效果跟Context状态提升的状态一致即可。管理机制可以采取事件。
 
 如：
 ```tsx
@@ -233,10 +233,8 @@ const Root: React.FC<{}> = React.memo(() => {
 });
 ```
 
-直接使用事件流，在复杂系统中，需要的管理的状态流非常庞大，事件也将非常多以至于难以管理，此时需要将其封装，屏蔽其复杂性。
+但在复杂系统中，需要的管理的状态流非常庞大，事件也将非常多以至于难以管理，此时需要将其封装，屏蔽其复杂性。
 
 在react-use-shared-state中，使用一个事件器进行通信。对于一组使用同样事件名的状态称为通道，该通道会在hook`useSharedState`调用时创建，此时主要是生成一个随机的事件名(该事件名在调用hook的组件的声明周期内保持不变)，同时在组件销毁时，自动注销事件的监听器。实际的状态生成和注册事件的逻辑，在需要状态的组件中调用执行，也就是对`useSharedState`返回的通道中的`useValue`hook调用时才执行创建状态和注册监听事件修改状态的逻辑。
 
 > `useSharedState`这个hook返回值中有一个hook, 可以理解它为一个hook工厂。这在react官方中是不推荐的，但在实际使用过程中，并不会导致某个组件hook的数量处于动态变化的情况下。
-
-

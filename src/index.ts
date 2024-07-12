@@ -11,7 +11,7 @@ export type Subscribe<A> = (callback: SubscribeCallback<A>) => () => void;
 
 const emitter = new EventEmitter();
 
-export interface Signal<S> {
+export interface Channel<S> {
   /**
    * 获取信号最新值，该值不支持响应式
    */
@@ -30,10 +30,10 @@ export interface Signal<S> {
   subscribe: Subscribe<S>;
 }
 
-export default function useSignal<S>(
+export default function useSharedState<S>(
   initialState: S | (() => S),
-): Signal<S> {
-  const eventNameRef = React.useRef<string>(`SIGNAL_${String(Math.random()).slice(2)}`);
+): Channel<S> {
+  const eventNameRef = React.useRef<string>(`SharedState_${String(Math.random()).slice(2)}`);
   const initialValue: S = React.useMemo(() => {
     if(isFunction(initialState)) {
       return initialState();
@@ -93,7 +93,9 @@ export default function useSignal<S>(
     return valueRef.current;
   }, []);
 
-  return {
+  const sharedState = React.useMemo(() => ({
     useValue, getValue, setValue: dispatch, subscribe,
-  };
+  }), []);
+
+  return sharedState;
 }
